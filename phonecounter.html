@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CornerMobile - Phone Inventory Counting</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="dark">
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        <span class="brand-title">Corner<span>Mobile</span></span>
+      </div>
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <button class="nav-link active" data-target="view-inventory">Inventory</button>
+        <button class="nav-link" data-target="view-categories">Categories</button>
+        <button class="nav-link" data-target="view-add-product">Add Product</button>
+        <button class="nav-icon-btn" data-target="view-settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <section id="view-inventory" class="view-panel active">
+      <div class="view-header">
+        <div>
+          <h1 class="page-title">Inventory</h1>
+          <p class="page-subtitle">Scan, search, and count stock in real-time</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total Phones</span>
+          <span class="stat-value" id="stat-total-qty">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Products</span>
+          <span class="stat-value" id="stat-total-products">0</span>
+        </div>
+        <div class="stat-card warning">
+          <span class="stat-label">Low Stock</span>
+          <span class="stat-value" id="stat-low-stock">0</span>
+        </div>
+        <div class="stat-card danger">
+          <span class="stat-label">Out of Stock</span>
+          <span class="stat-value" id="stat-out-of-stock">0</span>
+        </div>
+      </div>
+
+      <div class="search-bar-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="inventory-search" placeholder="Search phones, SKU, IMEI, location..." autocomplete="off">
+      </div>
+
+      <div class="category-pills-wrap">
+        <div class="category-pills" id="category-pills-container"></div>
+      </div>
+
+      <div class="filter-controls-row">
+        <div class="control-group">
+          <label for="sort-select">Sort</label>
+          <select id="sort-select" class="dropdown-select">
+            <option value="recent">Recently Added</option>
+            <option value="name-asc">Name A → Z</option>
+            <option value="name-desc">Name Z → A</option>
+            <option value="qty-asc">Quantity Low → High</option>
+            <option value="qty-desc">Quantity High → Low</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="filter-stock">Stock</label>
+          <select id="filter-stock" class="dropdown-select">
+            <option value="all">All Statuses</option>
+            <option value="in-stock">In Stock</option>
+            <option value="low-stock">Low Stock</option>
+            <option value="out-of-stock">Out of Stock</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="filter-storage">Storage</label>
+          <select id="filter-storage" class="dropdown-select">
+            <option value="all">All Storage</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="filter-condition">Condition</label>
+          <select id="filter-condition" class="dropdown-select">
+            <option value="all">All Conditions</option>
+            <option value="New">New</option>
+            <option value="Refurbished">Refurbished</option>
+            <option value="Used - Excellent">Used - Excellent</option>
+            <option value="Used - Good">Used - Good</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="product-grid" id="product-grid"></div>
+      <div id="inventory-empty" class="empty-state hidden"></div>
+    </section>
+
+    <section id="view-categories" class="view-panel">
+      <div class="view-header row-between">
+        <div>
+          <h1 class="page-title">Categories</h1>
+          <p class="page-subtitle">Group and organize inventory by brand/family</p>
+        </div>
+        <button class="btn btn-primary" id="btn-open-category-modal">+ Add Category</button>
+      </div>
+      <div class="categories-grid" id="categories-grid"></div>
+    </section>
+
+    <section id="view-add-product" class="view-panel">
+      <div class="view-header">
+        <h1 class="page-title" id="form-product-title">Add Product</h1>
+        <p class="page-subtitle">Register a smartphone to start manual count</p>
+      </div>
+      <form id="product-form" class="standard-form">
+        <input type="hidden" id="form-product-id">
+
+        <div class="image-upload-wrapper">
+          <div class="image-preview-box" id="image-preview-container">
+            <div class="image-placeholder-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <span>Upload Photo</span>
+            </div>
+            <img id="image-preview" alt="Device preview" class="hidden">
+          </div>
+          <div class="upload-actions">
+            <label class="btn btn-secondary btn-sm" for="product-image-input">Choose Image</label>
+            <input type="file" id="product-image-input" accept="image/*" class="visually-hidden">
+            <button type="button" class="btn btn-outline btn-sm hidden" id="btn-remove-image">Remove</button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="prod-brand">Brand <span class="req">*</span></label>
+            <input type="text" id="prod-brand" list="brand-datalist" required placeholder="e.g. Apple">
+            <datalist id="brand-datalist"></datalist>
+          </div>
+          <div class="form-field">
+            <label for="prod-model">Model <span class="req">*</span></label>
+            <input type="text" id="prod-model" required placeholder="e.g. iPhone 14 Pro">
+          </div>
+          <div class="form-field">
+            <label for="prod-category">Category</label>
+            <select id="prod-category" class="dropdown-select"></select>
+          </div>
+          <div class="form-field">
+            <label for="prod-storage">Storage</label>
+            <input type="text" id="prod-storage" placeholder="e.g. 128 GB, 256 GB">
+          </div>
+          <div class="form-field">
+            <label for="prod-color">Color</label>
+            <input type="text" id="prod-color" placeholder="e.g. Space Black">
+          </div>
+          <div class="form-field">
+            <label for="prod-sku">SKU / Reference</label>
+            <input type="text" id="prod-sku" placeholder="e.g. IP14P-256-BLK">
+          </div>
+          <div class="form-field">
+            <label for="prod-imei">IMEI / Serial</label>
+            <input type="text" id="prod-imei" placeholder="15-digit number or Serial">
+          </div>
+          <div class="form-field">
+            <label for="prod-location">Store Location / Shelf</label>
+            <input type="text" id="prod-location" placeholder="e.g. Shelf B2">
+          </div>
+          <div class="form-field">
+            <label for="prod-condition">Condition</label>
+            <select id="prod-condition" class="dropdown-select">
+              <option value="New">New</option>
+              <option value="Refurbished">Refurbished</option>
+              <option value="Used - Excellent">Used - Excellent</option>
+              <option value="Used - Good">Used - Good</option>
+            </select>
+          </div>
+          <div class="form-field" id="form-quantity-wrapper">
+            <label for="prod-quantity">Initial Quantity <span class="req">*</span></label>
+            <input type="number" id="prod-quantity" min="0" value="1" required>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="prod-notes">Notes / Internal Remarks</label>
+          <textarea id="prod-notes" rows="3" placeholder="Condition details, supplier info, etc."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-form">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-form">Save Product</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="view-product-details" class="view-panel">
+      <div class="details-top-bar">
+        <button class="btn btn-secondary btn-sm" id="btn-back-to-inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          Back
+        </button>
+        <div class="details-actions">
+          <button class="btn btn-outline btn-sm" id="btn-edit-details">Edit Product</button>
+          <button class="btn btn-danger-outline btn-sm" id="btn-delete-details">Delete</button>
+        </div>
+      </div>
+
+      <div class="product-detail-layout">
+        <div class="detail-header-card">
+          <div class="detail-img-container" id="detail-img-box"></div>
+          <div class="detail-title-box">
+            <span class="badge" id="detail-stock-badge">In Stock</span>
+            <h1 class="detail-model-title" id="detail-model">iPhone 13</h1>
+            <p class="detail-subtitle" id="detail-subtitle">Apple • 128 GB • Black</p>
+            <div class="detail-tags" id="detail-tags"></div>
+          </div>
+        </div>
+
+        <div class="detail-counter-card">
+          <span class="counter-label">CURRENT QUANTITY</span>
+          <div class="counter-large-number" id="detail-quantity-display">0</div>
+          <div class="counter-actions-row">
+            <button class="counter-btn minus" id="btn-detail-decrement" aria-label="Decrease quantity by 1">− 1</button>
+            <button class="counter-btn plus" id="btn-detail-increment" aria-label="Increase quantity by 1">+ 1</button>
+          </div>
+          <button class="btn btn-secondary btn-block" id="btn-open-set-quantity">Set Exact Quantity</button>
+        </div>
+
+        <div class="detail-specs-card">
+          <h2 class="card-heading">Product Information</h2>
+          <dl class="specs-list">
+            <div><dt>Brand</dt><dd id="spec-brand">-</dd></div>
+            <div><dt>Model</dt><dd id="spec-model">-</dd></div>
+            <div><dt>Storage</dt><dd id="spec-storage">-</dd></div>
+            <div><dt>Color</dt><dd id="spec-color">-</dd></div>
+            <div><dt>SKU</dt><dd id="spec-sku">-</dd></div>
+            <div><dt>IMEI / Serial</dt><dd id="spec-imei">-</dd></div>
+            <div><dt>Location</dt><dd id="spec-location">-</dd></div>
+            <div><dt>Condition</dt><dd id="spec-condition">-</dd></div>
+            <div><dt>Category</dt><dd id="spec-category">-</dd></div>
+            <div><dt>Last Counted</dt><dd id="spec-updated">-</dd></div>
+          </dl>
+          <div class="detail-notes-section">
+            <span class="notes-label">Notes</span>
+            <p id="spec-notes" class="notes-text">No notes provided.</p>
+          </div>
+        </div>
+
+        <div class="detail-history-card">
+          <h2 class="card-heading">Count History</h2>
+          <div id="history-log-list" class="history-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-settings" class="view-panel">
+      <div class="view-header">
+        <h1 class="page-title">Settings</h1>
+        <p class="page-subtitle">Theme, counting thresholds, and data backup</p>
+      </div>
+
+      <div class="settings-sections">
+        <div class="settings-card">
+          <h2 class="card-heading">Appearance</h2>
+          <div class="theme-options-grid">
+            <button class="theme-select-btn" data-theme-val="dark">Dark</button>
+            <button class="theme-select-btn" data-theme-val="system">System</button>
+            <button class="theme-select-btn" data-theme-val="light">Light</button>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h2 class="card-heading">Inventory Alert Threshold</h2>
+          <p class="settings-desc">Mark product as 'Low Stock' when units are at or below this value.</p>
+          <div class="threshold-input-row">
+            <input type="number" id="setting-low-stock" min="1" max="50" class="num-input">
+            <button class="btn btn-secondary" id="btn-save-threshold">Update Threshold</button>
+          </div>
+        </div>
+
+        <div class="settings-card">
+          <h2 class="card-heading">Data Management</h2>
+          <p class="settings-desc">Export, import, or wipe your completely client-side storage.</p>
+          <div class="data-actions-grid">
+            <button class="btn btn-secondary" id="btn-export-json">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export JSON
+            </button>
+            <button class="btn btn-secondary" id="btn-export-csv">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              Export CSV
+            </button>
+            <label class="btn btn-secondary" for="import-json-file">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Import JSON Backup
+            </label>
+            <input type="file" id="import-json-file" accept=".json" class="visually-hidden">
+            <button class="btn btn-danger-outline" id="btn-clear-all-data">Clear All Data</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+    <button class="mobile-nav-item active" data-target="view-inventory">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span>Inventory</span>
+    </button>
+    <button class="mobile-nav-item" data-target="view-categories">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      <span>Categories</span>
+    </button>
+    <button class="mobile-nav-item" data-target="view-add-product">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      <span>Add</span>
+    </button>
+    <button class="mobile-nav-item" data-target="view-settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+  <div class="modal-backdrop hidden" id="modal-backdrop">
+    <div class="modal-window" id="modal-window" role="dialog" aria-modal="true">
+      <h3 class="modal-title" id="modal-title">Dialog</h3>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
