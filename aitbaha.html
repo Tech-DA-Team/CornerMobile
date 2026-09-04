@@ -1,21 +1,205 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ait Baha Store — CornerMobile</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-      body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
-      .card{background:var(--surface);border:1px solid var(--border);padding:28px;border-radius:12px;text-align:center}
-      a{display:inline-block;margin-top:12px}
-    </style>
-  </head>
-  <body data-theme="dark">
-    <div class="card">
-      <h1>Ait Baha Store</h1>
-      <p class="muted">This store view is empty for now.</p>
-      <a class="btn btn-secondary" href="index.html">← Back</a>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ait Baha - Phone Inventory Counting</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="theme.css">
+</head>
+<body data-theme="dark">
+  <header class="top-nav">
+    <div class="nav-container">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        <span class="brand-title">Ait<span>Baha</span></span>
+      </div>
+      <nav class="desktop-menu" aria-label="Main Navigation">
+        <button class="nav-link active" data-target="view-inventory">Inventory</button>
+        <button class="nav-link" data-target="view-categories">Categories</button>
+        <button class="nav-link" data-target="view-add-product">Add Product</button>
+        <button class="nav-icon-btn" data-target="view-settings" aria-label="Settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </nav>
     </div>
-  </body>
-</html>
+  </header>
+
+  <main class="app-main">
+    <section id="view-inventory" class="view-panel active">
+      <div class="view-header">
+        <div>
+          <h1 class="page-title">Inventory</h1>
+          <p class="page-subtitle">Scan, search, and count stock in real-time</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total Phones</span>
+          <span class="stat-value" id="stat-total-qty">0</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Products</span>
+          <span class="stat-value" id="stat-total-products">0</span>
+        </div>
+        <div class="stat-card warning">
+          <span class="stat-label">Low Stock</span>
+          <span class="stat-value" id="stat-low-stock">0</span>
+        </div>
+        <div class="stat-card danger">
+          <span class="stat-label">Out of Stock</span>
+          <span class="stat-value" id="stat-out-of-stock">0</span>
+        </div>
+      </div>
+
+      <div class="search-bar-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" id="inventory-search" placeholder="Search phones, SKU, IMEI, location..." autocomplete="off">
+      </div>
+
+      <div class="category-pills-wrap">
+        <div class="category-pills" id="category-pills-container"></div>
+      </div>
+
+      <div class="filter-controls-row">
+        <div class="control-group">
+          <label for="sort-select">Sort</label>
+          <select id="sort-select" class="dropdown-select">
+            <option value="recent">Recently Added</option>
+            <option value="name-asc">Name A → Z</option>
+            <option value="name-desc">Name Z → A</option>
+            <option value="qty-asc">Quantity Low → High</option>
+            <option value="qty-desc">Quantity High → Low</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="filter-stock">Stock</label>
+          <select id="filter-stock" class="dropdown-select">
+            <option value="all">All Statuses</option>
+            <option value="in-stock">In Stock</option>
+            <option value="low-stock">Low Stock</option>
+            <option value="out-of-stock">Out of Stock</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="filter-storage">Storage</label>
+          <select id="filter-storage" class="dropdown-select">
+            <option value="all">All Storage</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="filter-condition">Condition</label>
+          <select id="filter-condition" class="dropdown-select">
+            <option value="all">All Conditions</option>
+            <option value="New">New</option>
+            <option value="Refurbished">Refurbished</option>
+            <option value="Used - Excellent">Used - Excellent</option>
+            <option value="Used - Good">Used - Good</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="product-grid" id="product-grid"></div>
+      <div id="inventory-empty" class="empty-state hidden"></div>
+    </section>
+
+    <section id="view-categories" class="view-panel">
+      <div class="view-header row-between">
+        <div>
+          <h1 class="page-title">Categories</h1>
+          <p class="page-subtitle">Group and organize inventory by brand/family</p>
+        </div>
+        <button class="btn btn-primary" id="btn-open-category-modal">+ Add Category</button>
+      </div>
+      <div class="categories-grid" id="categories-grid"></div>
+    </section>
+
+    <section id="view-add-product" class="view-panel">
+      <div class="view-header">
+        <h1 class="page-title" id="form-product-title">Add Product</h1>
+        <p class="page-subtitle">Register a smartphone to start manual count</p>
+      </div>
+      <form id="product-form" class="standard-form">
+        <input type="hidden" id="form-product-id">
+
+        <div class="image-upload-wrapper">
+          <div class="image-preview-box" id="image-preview-container">
+            <div class="image-placeholder-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              <span>Upload Photo</span>
+            </div>
+            <img id="image-preview" alt="Device preview" class="hidden">
+          </div>
+          <div class="upload-actions">
+            <label class="btn btn-secondary btn-sm" for="product-image-input">Choose Image</label>
+            <input type="file" id="product-image-input" accept="image/*" class="visually-hidden">
+            <button type="button" class="btn btn-outline btn-sm hidden" id="btn-remove-image">Remove</button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="prod-brand">Brand <span class="req">*</span></label>
+            <input type="text" id="prod-brand" list="brand-datalist" required placeholder="e.g. Apple">
+            <datalist id="brand-datalist"></datalist>
+          </div>
+          <div class="form-field">
+            <label for="prod-model">Model <span class="req">*</span></label>
+            <input type="text" id="prod-model" required placeholder="e.g. iPhone 14 Pro">
+          </div>
+          <div class="form-field">
+            <label for="prod-category">Category</label>
+            <select id="prod-category" class="dropdown-select"></select>
+          </div>
+          <div class="form-field">
+            <label for="prod-storage">Storage</label>
+            <input type="text" id="prod-storage" placeholder="e.g. 128 GB, 256 GB">
+          </div>
+          <div class="form-field">
+            <label for="prod-color">Color</label>
+            <input type="text" id="prod-color" placeholder="e.g. Space Black">
+          </div>
+          <div class="form-field">
+            <label for="prod-sku">SKU / Reference</label>
+            <input type="text" id="prod-sku" placeholder="e.g. IP14P-256-BLK">
+          </div>
+          <div class="form-field">
+            <label for="prod-imei">IMEI / Serial</label>
+            <input type="text" id="prod-imei" placeholder="15-digit number or Serial">
+          </div>
+          <div class="form-field">
+            <label for="prod-location">Store Location / Shelf</label>
+            <input type="text" id="prod-location" placeholder="e.g. Shelf B2">
+          </div>
+          <div class="form-field">
+            <label for="prod-condition">Condition</label>
+            <select id="prod-condition" class="dropdown-select">
+              <option value="New">New</option>
+              <option value="Refurbished">Refurbished</option>
+              <option value="Used - Excellent">Used - Excellent</option>
+              <option value="Used - Good">Used - Good</option>
+            </select>
+          </div>
+          <div class="form-field" id="form-quantity-wrapper">
+            <label for="prod-quantity">Initial Quantity <span class="req">*</span></label>
+            <input type="number" id="prod-quantity" min="0" value="1" required>
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="prod-notes">Notes / Internal Remarks</label>
+          <textarea id="prod-notes" rows="3" placeholder="Condition details, supplier info, etc."></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-form">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-form">Save Product</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="view-product-details" class="view-panel">
+      <div class="details-top-bar">
+        <button class="btn btn-secondary btn-sm" id="btn-back-to-inventory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2`
