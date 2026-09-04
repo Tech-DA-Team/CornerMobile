@@ -1323,3 +1323,22 @@ body {
 .hidden {
   display: none !important;
 }
+/* Read-Only Public Mode */
+body.read-only .btn-qty-dec,
+body.read-only .btn-qty-inc,
+body.read-only .counter-actions-row,
+body.read-only #btn-open-set-quantity,
+body.read-only #btn-edit-details,
+body.read-only #btn-delete-details,
+body.read-only #btn-open-category-modal,
+body.read-only [data-target="view-add-product"],
+body.read-only .mobile-nav-item[data-target="view-add-product"],
+body.read-only #form-product-title,
+body.read-only .data-actions-grid label,
+body.read-only #btn-clear-all-data {
+  display: none !important;
+}
+
+body.read-only .card-counter-section {
+  justify-content: center;
+}

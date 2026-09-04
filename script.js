@@ -61,16 +61,23 @@
   let viewingProductId = null;
   let formUploadedImageData = '';
 
+  // --- Admin Detection ---
+  const IS_ADMIN = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
   // --- Initializer ---
-  function init() {
-    loadState();
+  async function init() {
+    if (!IS_ADMIN) {
+      document.body.classList.add('read-only');
+    }
+
+    await loadState();
     applyTheme(settings.theme);
     setupEventListeners();
     renderAll();
   }
 
   // --- State & Storage Handlers ---
-  function loadState() {
+  async function loadState() {
     try {
       const storedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
       if (storedSettings) settings = { ...DEFAULT_SETTINGS, ...JSON.parse(storedSettings) };
@@ -81,25 +88,33 @@
       const storedHistory = localStorage.getItem(STORAGE_KEYS.HISTORY);
       historyLogs = storedHistory ? JSON.parse(storedHistory) : [];
 
-      const storedProducts = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      if (storedProducts) {
-        products = JSON.parse(storedProducts);
+      if (IS_ADMIN) {
+        // Admin: Load your working inventory from local storage
+        const storedProducts = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
+        if (storedProducts) {
+          products = JSON.parse(storedProducts);
+        } else {
+          products = DEMO_PRODUCTS.map((p, idx) => ({
+            ...p,
+            id: 'pc_' + Date.now() + '_' + idx,
+            imei: '',
+            image: '',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }));
+          saveProducts();
+        }
       } else {
-        // First Launch Only: inject demo products
-        products = DEMO_PRODUCTS.map((p, idx) => ({
-          ...p,
-          id: 'pc_' + Date.now() + '_' + idx,
-          imei: '',
-          image: '',
-          createdAt: new Date(Date.now() - (idx * 3600000)).toISOString(),
-          updatedAt: new Date().toISOString()
-        }));
-        saveProducts();
-        saveCategories();
+        // Public Visitors: Always fetch the immutable published file
+        const response = await fetch('./inventory.json?t=' + Date.now());
+        if (response.ok) {
+          products = await response.json();
+        } else {
+          products = [];
+        }
       }
     } catch (err) {
-      console.error('Error reading localStorage:', err);
-      showToast('Storage error initializing app', 'error');
+      console.error('Error loading inventory:', err);
     }
   }
 
@@ -129,6 +144,8 @@
 
   // --- Quantity Modification Core ---
   function changeProductQuantity(productId, delta, isAbsolute = false) {
+    if (!IS_ADMIN) return; // Prevent any modifications on live visitors' browsers
+
     const item = products.find(p => p.id === productId);
     if (!item) return;
 
@@ -141,23 +158,7 @@
     item.updatedAt = new Date().toISOString();
     saveProducts();
 
-    // Append history record
-    const historyEntry = {
-      id: 'h_' + Date.now(),
-      productId: item.id,
-      model: `${item.brand} ${item.model}`,
-      from: oldQty,
-      to: newQty,
-      diff: newQty - oldQty,
-      timestamp: new Date().toISOString()
-    };
-    historyLogs.unshift(historyEntry);
-    if (historyLogs.length > 500) historyLogs.pop();
-    saveHistory();
-
-    // Update UI elements in place immediately for fast response
     updateDomCounters(productId, newQty);
-
     if (viewingProductId === productId) {
       renderProductDetails(productId);
     }
