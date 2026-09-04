@@ -105,11 +105,24 @@
           saveProducts();
         }
       } else {
-        // Public Visitors: Always fetch the immutable published file
-        const response = await fetch('./inventory.json?t=' + Date.now());
-        if (response.ok) {
-          products = await response.json();
-        } else {
+        // Public Visitors / Vercel: Fetch published inventory
+        try {
+          const response = await fetch('./inventory.json?t=' + Date.now());
+          if (response.ok) {
+            const data = await response.json();
+            // Handle both wrapped backup format and raw array format
+            if (Array.isArray(data)) {
+              products = data;
+            } else if (data && Array.isArray(data.products)) {
+              products = data.products;
+              if (Array.isArray(data.categories)) categories = data.categories;
+            }
+          } else {
+            console.warn('inventory.json not found on server');
+            products = [];
+          }
+        } catch (err) {
+          console.error('Failed to load inventory.json:', err);
           products = [];
         }
       }
