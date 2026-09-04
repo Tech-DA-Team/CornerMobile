@@ -60,6 +60,151 @@
   let activeSort = 'recent';
   let viewingProductId = null;
   let formUploadedImageData = '';
+  let currentLanguage = localStorage.getItem('phonecount_language') || 'en';
+
+  const LANGUAGE_TEXT = {
+    en: {
+      inventory: 'Inventory',
+      categories: 'Categories',
+      addProduct: 'Add Product',
+      settings: 'Settings',
+      inventorySubtitle: 'Scan, search, and count stock in real-time',
+      totalPhones: 'Total Phones',
+      products: 'Products',
+      lowStock: 'Low Stock',
+      outOfStock: 'Out of Stock',
+      sort: 'Sort',
+      stock: 'Stock',
+      storage: 'Storage',
+      condition: 'Condition',
+      searchPlaceholder: 'Search phones, SKU, IMEI, location...',
+      addCategory: 'Add Category',
+      saveProduct: 'Save Product',
+      uploadPhoto: 'Upload Photo',
+      chooseImage: 'Choose Image',
+      remove: 'Remove',
+      cancel: 'Cancel',
+      brand: 'Brand',
+      model: 'Model',
+      category: 'Category',
+      color: 'Color',
+      sku: 'SKU / Reference',
+      imei: 'IMEI / Serial',
+      location: 'Store Location / Shelf',
+      initialQuantity: 'Initial Quantity',
+      notes: 'Notes / Internal Remarks',
+      productInfo: 'Product Information',
+      countHistory: 'Count History',
+      appearance: 'Appearance',
+      settingsTitle: 'Settings',
+      threshold: 'Inventory Alert Threshold',
+      dataManagement: 'Data Management',
+      exportJson: 'Export JSON',
+      exportCsv: 'Export CSV',
+      importJson: 'Import JSON Backup',
+      clearAllData: 'Clear All Data',
+      back: 'Back',
+      editProduct: 'Edit Product',
+      delete: 'Delete',
+      setExactQuantity: 'Set Exact Quantity',
+      currentQuantity: 'CURRENT QUANTITY',
+      searchAndSort: 'Scan, search, and count stock in real-time'
+    },
+    fr: {
+      inventory: 'Inventaire',
+      categories: 'Catégories',
+      addProduct: 'Ajouter un produit',
+      settings: 'Paramètres',
+      inventorySubtitle: 'Scannez, recherchez et comptez le stock en temps réel',
+      totalPhones: 'Téléphones totaux',
+      products: 'Produits',
+      lowStock: 'Stock faible',
+      outOfStock: 'Rupture de stock',
+      sort: 'Trier',
+      stock: 'Stock',
+      storage: 'Mémoire',
+      condition: 'État',
+      searchPlaceholder: 'Rechercher des téléphones, SKU, IMEI, emplacement...',
+      addCategory: 'Ajouter une catégorie',
+      saveProduct: 'Enregistrer',
+      uploadPhoto: 'Téléverser une photo',
+      chooseImage: 'Choisir une image',
+      remove: 'Retirer',
+      cancel: 'Annuler',
+      brand: 'Marque',
+      model: 'Modèle',
+      category: 'Catégorie',
+      color: 'Couleur',
+      sku: 'SKU / Référence',
+      imei: 'IMEI / Série',
+      location: 'Emplacement / Étagère',
+      initialQuantity: 'Quantité initiale',
+      notes: 'Notes / Remarques internes',
+      productInfo: 'Informations du produit',
+      countHistory: 'Historique des comptages',
+      appearance: 'Apparence',
+      settingsTitle: 'Paramètres',
+      threshold: 'Seuil d’alerte de stock',
+      dataManagement: 'Gestion des données',
+      exportJson: 'Exporter JSON',
+      exportCsv: 'Exporter CSV',
+      importJson: 'Importer la sauvegarde JSON',
+      clearAllData: 'Effacer toutes les données',
+      back: 'Retour',
+      editProduct: 'Modifier le produit',
+      delete: 'Supprimer',
+      setExactQuantity: 'Définir la quantité exacte',
+      currentQuantity: 'QUANTITÉ ACTUELLE',
+      searchAndSort: 'Scannez, recherchez et comptez le stock en temps réel'
+    },
+    ar: {
+      inventory: 'المخزون',
+      categories: 'الفئات',
+      addProduct: 'إضافة منتج',
+      settings: 'الإعدادات',
+      inventorySubtitle: 'امسح، ابحث، وقم بحساب المخزون في الوقت الحقيقي',
+      totalPhones: 'إجمالي الهواتف',
+      products: 'المنتجات',
+      lowStock: 'مخزون منخفض',
+      outOfStock: 'غير متوفر',
+      sort: 'ترتيب',
+      stock: 'المخزون',
+      storage: 'السعة',
+      condition: 'الحالة',
+      searchPlaceholder: 'ابحث عن الهواتف أو SKU أو IMEI أو الموقع...',
+      addCategory: 'إضافة فئة',
+      saveProduct: 'حفظ المنتج',
+      uploadPhoto: 'تحميل صورة',
+      chooseImage: 'اختر صورة',
+      remove: 'إزالة',
+      cancel: 'إلغاء',
+      brand: 'العلامة التجارية',
+      model: 'الموديل',
+      category: 'الفئة',
+      color: 'اللون',
+      sku: 'SKU / المرجع',
+      imei: 'IMEI / السيريال',
+      location: 'الموقع / الرف',
+      initialQuantity: 'الكمية الأولية',
+      notes: 'ملاحظات / ملاحظات داخلية',
+      productInfo: 'معلومات المنتج',
+      countHistory: 'سجل العد',
+      appearance: 'المظهر',
+      settingsTitle: 'الإعدادات',
+      threshold: 'حد تنبيه المخزون',
+      dataManagement: 'إدارة البيانات',
+      exportJson: 'تصدير JSON',
+      exportCsv: 'تصدير CSV',
+      importJson: 'استيراد نسخة JSON',
+      clearAllData: 'مسح جميع البيانات',
+      back: 'رجوع',
+      editProduct: 'تعديل المنتج',
+      delete: 'حذف',
+      setExactQuantity: 'تعيين الكمية الدقيقة',
+      currentQuantity: 'الكمية الحالية',
+      searchAndSort: 'امسح، ابحث، وقم بحساب المخزون في الوقت الحقيقي'
+    }
+  };
 
   // --- Admin Detection ---
   const IS_ADMIN = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
@@ -72,6 +217,7 @@
 
     await loadState();
     applyTheme(settings.theme);
+    applyTranslations();
     setupEventListeners();
     renderAll();
   }
@@ -670,6 +816,69 @@
     }
   }
 
+  function applyTranslations() {
+    const text = LANGUAGE_TEXT[currentLanguage] || LANGUAGE_TEXT.en;
+    const applyText = (selector, value) => {
+      const node = document.querySelector(selector);
+      if (node) node.textContent = value;
+    };
+
+    applyText('[data-target="view-inventory"]', text.inventory);
+    applyText('[data-target="view-categories"]', text.categories);
+    applyText('[data-target="view-add-product"]', text.addProduct);
+    applyText('[data-target="view-settings"]', text.settings);
+
+    const inventoryTitle = document.querySelector('#view-inventory .page-title');
+    if (inventoryTitle) inventoryTitle.textContent = text.inventory;
+    const inventorySubtitle = document.querySelector('#view-inventory .page-subtitle');
+    if (inventorySubtitle) inventorySubtitle.textContent = text.inventorySubtitle;
+
+    applyText('.stat-card:nth-of-type(1) .stat-label', text.totalPhones);
+    applyText('.stat-card:nth-of-type(2) .stat-label', text.products);
+    applyText('.stat-card.warning .stat-label', text.lowStock);
+    applyText('.stat-card.danger .stat-label', text.outOfStock);
+
+    applyText('label[for="sort-select"]', text.sort);
+    applyText('label[for="filter-stock"]', text.stock);
+    applyText('label[for="filter-storage"]', text.storage);
+    applyText('label[for="filter-condition"]', text.condition);
+
+    const searchInput = document.getElementById('inventory-search');
+    if (searchInput) searchInput.placeholder = text.searchPlaceholder;
+
+    const addCategoryBtn = document.getElementById('btn-open-category-modal');
+    if (addCategoryBtn) addCategoryBtn.textContent = `+ ${text.addCategory}`;
+
+    const productTitle = document.getElementById('form-product-title');
+    if (productTitle && productTitle.textContent === 'Add Product') productTitle.textContent = text.addProduct;
+
+    const submitBtn = document.getElementById('btn-submit-form');
+    if (submitBtn) submitBtn.textContent = text.saveProduct;
+
+    const cancelBtn = document.getElementById('btn-cancel-form');
+    if (cancelBtn) cancelBtn.textContent = text.cancel;
+
+    const settingsTitle = document.querySelector('#view-settings .page-title');
+    if (settingsTitle) settingsTitle.textContent = text.settings;
+
+    const settingsHeading = document.querySelector('#view-settings .page-subtitle');
+    if (settingsHeading) settingsHeading.textContent = text.settingsTitle;
+
+    const themeBtn = document.querySelector('.theme-select-btn[data-theme-val="dark"]');
+    if (themeBtn) themeBtn.textContent = 'Dark';
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === currentLanguage);
+    });
+  }
+
+  function setLanguage(lang) {
+    if (!LANGUAGE_TEXT[lang]) return;
+    currentLanguage = lang;
+    localStorage.setItem('phonecount_language', lang);
+    applyTranslations();
+  }
+
   // --- Event Listeners Setup ---
   function setupEventListeners() {
     // Navigation routing
@@ -1086,6 +1295,14 @@
     document.getElementById('modal-backdrop').addEventListener('click', (e) => {
       if (e.target.id === 'modal-backdrop') closeModal();
     });
+
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        setLanguage(btn.dataset.lang);
+      });
+    });
+
+    // Navigation routing
   }
 
   function resetProductForm() {

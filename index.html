@@ -13,6 +13,9 @@
       .chooser{width:min(680px,94vw);text-align:center;color:var(--muted,#cbd5e1);padding:28px;border-radius:12px;background:var(--card-bg);box-shadow:0 8px 40px rgba(2,6,23,0.6);backdrop-filter:blur(6px)}
       .chooser h1{margin:0 0 6px;color:var(--text,#fff);letter-spacing:-0.2px;font-weight:600}
       .chooser p{margin:0 0 18px;color:var(--secondary,#9aa6b2)}
+      .language-toggle{display:inline-flex;align-items:center;gap:6px;padding:4px;border-radius:999px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);margin:0 auto 16px auto}
+      .lang-btn{background:transparent;border:0;color:var(--secondary,#9aa6b2);padding:6px 10px;border-radius:999px;font-size:0.72rem;font-weight:700;cursor:pointer;transition:all .2s ease}
+      .lang-btn.active{background:var(--accent,#73e944);color:#08131d}
       .options{display:flex;gap:14px;justify-content:center;margin-top:18px}
       .store-card{flex:1;min-width:160px;background:rgba(255,255,255,0.02);border-radius:10px;padding:18px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;border:1px solid transparent;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
       .store-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(3,10,28,0.6);border-color:rgba(255,255,255,0.04)}
@@ -26,8 +29,13 @@
   </head>
   <body>
     <main class="chooser">
-      <h1>Choose a Store</h1>
-      <p>Select which storefront you want to open.</p>
+      <div class="language-toggle" aria-label="Language selector">
+        <button class="lang-btn active" data-lang="en" type="button">EN</button>
+        <button class="lang-btn" data-lang="fr" type="button">FR</button>
+        <button class="lang-btn" data-lang="ar" type="button">AR</button>
+      </div>
+      <h1 id="welcome-title">Welcome to CornerMobile</h1>
+      <p id="welcome-subtitle">Please pick a store to continue.</p>
       <div class="options">
         <a class="store-card" href="aitbaha.html" aria-label="Open Ait Baha store">
           <div class="store-logo">AB</div>
@@ -48,5 +56,73 @@
         </a>
       </div>
     </main>
+
+    <script>
+      const translations = {
+        en: {
+          welcome: 'Welcome to CornerMobile',
+          prompt: 'Please pick a store to continue.',
+          aitSub: 'Open the Ait Baha Inventory',
+          ouedSub: 'Open the Oued Dahab Inventory',
+          open: 'Open',
+          aitAria: 'Open Ait Baha store',
+          ouedAria: 'Open Oued Dahab store'
+        },
+        fr: {
+          welcome: 'Bienvenue chez CornerMobile',
+          prompt: 'Veuillez choisir un magasin pour continuer.',
+          aitSub: 'Ouvrir l’inventaire d’Ait Baha',
+          ouedSub: 'Ouvrir l’inventaire d’Oued Dahab',
+          open: 'Ouvrir',
+          aitAria: 'Ouvrir le magasin Ait Baha',
+          ouedAria: 'Ouvrir le magasin Oued Dahab'
+        },
+        ar: {
+          welcome: 'مرحبًا بك في CornerMobile',
+          prompt: 'يرجى اختيار متجر للمتابعة.',
+          aitSub: 'فتح مخزون Ait Baha',
+          ouedSub: 'فتح مخزون Oued Dahab',
+          open: 'فتح',
+          aitAria: 'فتح متجر Ait Baha',
+          ouedAria: 'فتح متجر Oued Dahab'
+        }
+      };
+
+      const currentLang = localStorage.getItem('phonecount_language') || 'en';
+
+      function applyChooserLanguage(lang) {
+        const text = translations[lang] || translations.en;
+        document.getElementById('welcome-title').textContent = text.welcome;
+        document.getElementById('welcome-subtitle').textContent = text.prompt;
+
+        const aitSub = document.querySelectorAll('.store-sub')[0];
+        const ouedSub = document.querySelectorAll('.store-sub')[1];
+        if (aitSub) aitSub.textContent = text.aitSub;
+        if (ouedSub) ouedSub.textContent = text.ouedSub;
+
+        document.querySelectorAll('.store-cta').forEach(btn => {
+          btn.textContent = text.open;
+        });
+
+        const aitCard = document.querySelectorAll('.store-card')[0];
+        const ouedCard = document.querySelectorAll('.store-card')[1];
+        if (aitCard) aitCard.setAttribute('aria-label', text.aitAria);
+        if (ouedCard) ouedCard.setAttribute('aria-label', text.ouedAria);
+
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.lang === lang);
+        });
+      }
+
+      document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const lang = btn.dataset.lang;
+          localStorage.setItem('phonecount_language', lang);
+          applyChooserLanguage(lang);
+        });
+      });
+
+      applyChooserLanguage(currentLang);
+    </script>
   </body>
 </html>
